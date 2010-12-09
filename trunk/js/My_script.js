@@ -123,26 +123,37 @@ var q_num = 1 , q_order = 1; //question number và answer number = 1
     $("#create_quiz").click(function(){
         var error = '';
         if ($("#quiz_title").val() == '')
-            error += "Bạn chưa nhập tiêu đề bài Quiz.<br />";
+            error += "Bạn chưa nhập tiêu đề bài thi.\n";
         if ($("#quiz_info").val() == '')
-            error += "Bạn chưa nhập mô tả bài Quiz.<br />";
+            error += "Bạn chưa nhập mô tả.\n";
         if ($("#total").val() == 0)
-            error += "Bạn chưa tạo câu hỏi.<br />";
+            error += "Bạn chưa tạo câu hỏi.\n";
         if ($("#st_time").val() < 0)
             error += "Thời gian không được âm.";
+        if ($("#st_status").attr('checked'))
+        {
+            var date_start = $("#st_day_start").val() + $("#st_time_start").val();
+            var date_end = $("#st_day_end").val() + $("#st_time_end").val();
+            
+            alert(date_start + ' ' + date_end);
+            if (date_start > date_end)
+                alert('sai');
+            els
+                alert('dung');
+        }
             
         if (error != '') 
         {
-             $("#error").html(error).dialog();
+             alert(error);
              return false;
         }
     });
     
     // CHANGE SETTING
-    $("#st_status_limit").click(function(){
+    $("#st_status").click(function(){
         $("#st_status_box").slideDown('fast');
-        $("#st_start_day, #st_end_day").datepicker(); 
-        $("#st_start_time, #st_end_time").timePicker();    
+        $("#st_day_start, #st_day_end").datepicker(); 
+        $("#st_time_start, #st_time_end").timePicker();    
     });
     $(".st_status").click(function(){
         $("#st_status_box").slideUp('fast');    

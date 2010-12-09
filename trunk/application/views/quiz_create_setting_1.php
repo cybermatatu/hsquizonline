@@ -4,10 +4,10 @@
         <label>Tình trạng:</label>
         Mở<input class="st_status" type="radio" name="st_status" value="1" checked="checked" /> 
         Khóa<input class="st_status" type="radio" name="st_status" value="0" />
-        Thời hạn<input type="radio" id="st_status_limit" name="st_status" />
+        Thời hạn<input type="radio" id="st_status" name="st_status" />
         <div id="st_status_box" class="hide">
-            <div>Bắt đầu &nbsp;<input type="text" id="st_start_day" name="start_day" /> <input type="text" id="st_start_time" name="start_time" /></div>
-            <div><label>&nbsp;</label>Kết thúc <input type="text" id="st_end_day" name="end_day" /> <input type="text" id="st_end_time" name="end_time" /></div>
+            <div>Bắt đầu &nbsp;<input type="text" id="st_day_start" name="st_day_start" /> <input type="text" id="st_time_start" name="st_time_start" /></div>
+            <div><label>&nbsp;</label>Kết thúc <input type="text" id="st_day_end" name="st_day_end" /> <input type="text" id="st_time_end" name="st_time_end" /></div>
         </div>
     </li>
     <li>

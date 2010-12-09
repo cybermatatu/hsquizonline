@@ -55,7 +55,6 @@
         <input type="hidden" name="total" id="total" value="0" />
         <button class="button-accept" id="create_quiz">Hoàn Tất</button>
     </div>
-    <div id="error"></div>
 </div>
 </form>
 </div>
