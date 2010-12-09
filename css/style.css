@@ -236,8 +236,8 @@ ul.quiz_list li a.delete{color: #C00}
 ul.quiz_list li em a{color: #333} ul.quiz_list li em a:hover{color: #C00}
 ul.quiz_list li:nth-child(even){background: #fbf5e5}
 
-#st_start_day, #st_end_day{ background: url(../images/icons/calendar.png) no-repeat 100% 2px; }
-#st_start_time, #st_end_time{ background: url(../images/icons/clock.png) no-repeat 100% 2px; }
+#st_day_start, #st_day_end{ background: url(../images/icons/calendar.png) no-repeat 100% 2px; }
+#st_time_start, #st_time_end{ background: url(../images/icons/clock.png) no-repeat 100% 2px; }
 /*-------------------------------------------------------------------------------------------------*/
 /* QUESTION
 /*-------------------------------------------------------------------------------------------------*/
