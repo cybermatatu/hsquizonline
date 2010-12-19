@@ -10,8 +10,7 @@
         </div>
         <div class="last">
             <label>Môn Học:</label>
-            <select name="category_code" class="select" style="width: 260px;">
-                <option value="0">[ Default ]</option>
+            <select name="category_id" class="select" style="width: 260px;">
             <?php
                 foreach($category_list as $l) {
                     echo '<option value="'.$l->category_id.'">'.$l->code.' | '.$l->title.'</option>';
@@ -53,7 +52,7 @@
     
     <div class="create_quiz_row">
         <input type="hidden" name="total" id="total" value="0" />
-        <button class="button-accept" id="create_quiz">Hoàn Tất</button>
+        <input type="submit" class="button-accept" id="create_quiz" name="create_quiz" value="Hoàn Tất" />
     </div>
 </div>
 </form>

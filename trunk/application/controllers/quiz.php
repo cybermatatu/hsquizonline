@@ -2,13 +2,13 @@
 
 class Quiz extends MY_Controller {
 
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();	
         $this->load->model('Quiz_Model');
 	}
     	
-    function index()
+    public function index()
     {
         $start = $this->uri->segment(3) ? $this->uri->segment(3) : 0;   
         
@@ -44,7 +44,7 @@ class Quiz extends MY_Controller {
 		$this->load->view('layout', $this->master);
     }
     
-	function create_quiz()
+	public function create_quiz()
 	{ 
         if (!isset($_SESSION['user_id'])) 
         {
@@ -72,8 +72,8 @@ class Quiz extends MY_Controller {
 	}
     
 
-    function view()
-    {   
+    public function view()
+    {           
         $quiz_id = $this->uri->segment(3);
         $this->master->quiz = $this->Quiz_Model->get_quiz($quiz_id); 
         
@@ -98,7 +98,7 @@ class Quiz extends MY_Controller {
                         $check_st = TRUE;
                     else
                         $this->master->st_error_msg = 'Sai mật khẩu';
-                        //$_SESSION['st_error_msg'] = 'Sai mật khẩu';
+
                 }
                 
                 $this->master->st_error = $this->load->view('quiz_answer_require_password', $this->master, TRUE);
@@ -117,29 +117,68 @@ class Quiz extends MY_Controller {
                 $this->master->content = $this->load->view('user_login_view', $this->master, TRUE);
                 echo $this->load->view('layout', $this->master, TRUE);
                 exit();
-            }
-            if (isset($_SESSION['quiz_start'])) {
-                unset($_SESSION['quiz_start']);
-                redirect(site_url().'/quiz/view/'.$quiz_id);
             } else { 
-                $_SESSION['quiz_start'] =  1;
-                $_SESSION['time_start'] = time();
-                $_SESSION['report_id'] = $this->Quiz_Model->set_report($this->master->quiz);
+                // kiểm tra xem user này đã làm quiz này chưa
+                $already = $this->Quiz_Model->check_already($_SESSION['user_id'], $quiz_id);
                 
-                $this->master->quiz_answer = $this->load->view('quiz_answer_show', $this->master, TRUE);    
+                if ($this->master->quiz['setting']->st_limit == 1 && $already)
+                {
+                    $this->master->quiz_answer = $this->load->view('quiz_already_view', $this->master, TRUE);
+                }
+                else
+                {
+                    if ($already)
+                    {
+                        // get result_id already
+                        $this->master->result_id = $this->Quiz_Model->get_result($_SESSION['user_id'], $quiz_id); 
+                         
+                        // get report_id already
+                        $_SESSION['report_id'] = $this->Quiz_Model->get_report_id($_SESSION['user_id'], $quiz_id);  
+                    }
+                    else
+                    {
+                        // ini all answer = 0
+                        $this->master->result_id = $this->Quiz_Model->set_result($_SESSION['user_id'], $quiz_id);  
+                        
+                        // ini report
+                        $_SESSION['report_id'] = $this->Quiz_Model->set_report($this->master->quiz);  
+                    }
+                    
+                    $_SESSION['quiz_start'] =  1;
+                    $_SESSION['time_start'] = time();
+
+                    $this->master->quiz_answer = $this->load->view('quiz_answer_show', $this->master, TRUE);
+                }
+                
+                    
             }      
         }
         
         /*------------------------------------------------------------------------------------------
-        // USER KẾT THÚC BÀI QUIZ -> SHOW KẾT QUẢ
+        // USER KẾT THÚC BÀI QUIZ
         ------------------------------------------------------------------------------------------*/    
         elseif (isset($_POST['done']))
         {
             if (isset($_SESSION['quiz_start']))
             {
                 unset($_SESSION['quiz_start']);
+                
+                //update tất cả câu trả lời lần cuối.
+                $this->Quiz_Model->update_result($_POST, FALSE);
+                
+                //chấm điểm
                 $this->master->score = $this->Quiz_Model->check_answer($_POST);
-                $this->master->quiz_answer = $this->load->view('quiz_score_view', $this->master, TRUE);    
+                
+                //check setting auto score
+                if ($this->master->quiz['setting']->st_score_show == 1)
+                {
+                    $this->master->quiz_answer = $this->load->view('quiz_score_view', $this->master, TRUE);
+                }
+                else
+                {
+                    $this->master->quiz_answer = $this->load->view('quiz_thank_view', $this->master, TRUE);
+                }
+                    
             }
             else
                 redirect(site_url().'/quiz/view/'.$quiz_id);
@@ -160,7 +199,7 @@ class Quiz extends MY_Controller {
         $this->load->view('layout', $this->master);
     }
     
-    function delete()
+    public function delete()
     {
 
         $quiz_id = $this->uri->segment(3);
@@ -168,7 +207,7 @@ class Quiz extends MY_Controller {
         redirect($_SERVER['HTTP_REFERER']);
     }
     
-    function report()
+    public function report()
     {
         $quiz_id = $this->uri->segment(3);
         $this->master->report = $this->Quiz_Model->get_report($quiz_id);
@@ -177,7 +216,7 @@ class Quiz extends MY_Controller {
         $this->load->view('layout', $this->master);
     }
     
-    function browse()
+    public function browse()
     {
         $this->master->business = $this->Quiz_Model->get_quiz_list_by_category_id(1);
         $this->master->education = $this->Quiz_Model->get_quiz_list_by_category_id(3);
@@ -185,6 +224,15 @@ class Quiz extends MY_Controller {
         
         $this->master->content = $this->load->view('quiz_browse_view', $this->master, TRUE);
         $this->load->view('layout', $this->master);
+    }
+    
+    public function edit()
+    {
+        $quiz_id = $this->uri->segment(3);
+        
+        $this->master->quiz = $this->Quiz_Model->get_quiz($quiz_id);
+        
+        
     }
     
     

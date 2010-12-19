@@ -30,7 +30,6 @@ else
     <script type="text/javascript" src="<?PHP echo base_url()?>js/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="<?PHP echo base_url()?>js/jquery-ui-1.8.6.custom.min.js"></script>
     <script type="text/javascript" src="<?PHP echo base_url()?>js/jquery.tgc.countdown.js"></script>
-    
     <script type="text/javascript" src="<?PHP echo base_url()?>js/crypt.js"></script>
     <script type="text/javascript" src="<?PHP echo base_url()?>js/My_script.js"></script>
            

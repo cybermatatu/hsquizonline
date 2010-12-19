@@ -28,9 +28,25 @@ $(document).ready(function(){
    
 });
 
-
 function call_back()
 {   checkconfirm = false;
     $("#answer_form").submit();
 }
 
+var send = setInterval("send_answer()", 10000);
+
+function send_answer()
+{
+    $.ajax({
+            type: "POST",
+            url: site_url,
+            data: "model=quiz&action=update_result&" + $("#answer_form").serialize(),
+            dataType: 'json',
+            success: function(msg){
+                
+            },
+            error: function(msg){
+                //alert(msg);
+            }
+    }); 
+}

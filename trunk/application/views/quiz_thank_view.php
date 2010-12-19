@@ -1,0 +1,1 @@
+<h3 class="notice" style="margin: 0 auto; width: 400px; text-align: center;">Cảm ơn bạn đã thực hiện bài Quiz</h3>
