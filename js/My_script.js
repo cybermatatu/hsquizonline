@@ -42,7 +42,7 @@ var q_num = 1 , q_order = 1; //question number và answer number = 1
                 question = '<div class="question_box" id="q_box_'+q_num+'"><h2>Câu hỏi <span class="q_num">'+q_order+'</span> - <em><b>Đúng / Sai</b></em><span class="question_delete" q_num="'+q_num+'">&nbsp;</span></h2><div class="question_list"><b>Câu hỏi:</b><br /><textarea name="question_title[]" style="width: 98%; height: 50px">Nội dung câu hỏi</textarea><input type="hidden" name="question_order[]" value="'+q_num+'" /><input type="hidden" name="question_type[]" id="q_type_'+q_num+'" value="'+q_type+'" /></div><div class="answer_list"><b>Trả lời:</b><br /><ul id="answer_root_'+q_num+'"><li id="answer_'+q_num+'_1"><input type="text" class="text" name="answer_'+q_num+'_title[]" value="Đúng"  /> <input type="radio" class="check" checked="checked" name="answer_'+q_num+'_check[]" value="1"/> <span style="margin-left: 10px;">&nbsp; &nbsp; &nbsp;</span> </li> <li id="answer_'+q_num+'_1"><input type="text" class="text" name="answer_'+q_num+'_title[]" value="Sai"  /> <input type="radio" class="check" name="answer_'+q_num+'_check[]" value="2"/> <span style="margin-left: 10px;">&nbsp; &nbsp; &nbsp;</span> </li></ul><br class="clear" /></div></div>';
                 break;
             case "4":
-                question = '<div class="question_box" id="q_box_'+q_num+'"><h2>Câu hỏi <span class="q_num">'+q_order+'</span> - <em><b>Tự luận</b></em><span class="question_delete" q_num="'+q_num+'">&nbsp;</span></h2><div class="question_list"><b>Câu hỏi:</b><br /><textarea name="question_title[]" style="width: 98%; height: 50px">Nội dung câu hỏi</textarea></div><div class="answer_list"><b>Trả lời:</b><br /><textarea class="textarea" name="answer_'+q_num+'_title[]" style="width: 98%; height: 100px"/></div></div>';
+                question = '<div class="question_box" id="q_box_'+q_num+'"><h2>Câu hỏi <span class="q_num">'+q_order+'</span> - <em><b>Tự luận</b></em><span class="question_delete" q_num="'+q_num+'">&nbsp;</span></h2><div class="question_list"><b>Câu hỏi:</b><br /><textarea name="question_title[]" style="width: 98%; height: 50px">Nội dung câu hỏi</textarea><input type="hidden" name="question_order[]" value="'+q_num+'" /><input type="hidden" name="question_type[]" id="q_type_'+q_num+'" value="'+q_type+'" /></div><div class="answer_list"><b>Trả lời:</b><br /><textarea class="textarea" name="answer_'+q_num+'_title[]" style="width: 98%; height: 100px"/></div></div>';
                 break;
         }
 
@@ -135,11 +135,16 @@ var q_num = 1 , q_order = 1; //question number và answer number = 1
             var date_start = $("#st_day_start").val() + $("#st_time_start").val();
             var date_end = $("#st_day_end").val() + $("#st_time_end").val();
             
-            alert(date_start + ' ' + date_end);
-            if (date_start > date_end)
-                alert('sai');
-            els
-                alert('dung');
+            if (date_start == '' || date_end == '')
+            {
+                error += "Bạn chưa nhập ngày bắt đầu hoặc kết thúc";    
+            }
+            else
+            {
+                //alert(date_start + ' ' + date_end);
+                if (date_start > date_end)
+                    error += "Ngày giờ bắt đầu phải trước ngày giờ kết thúc";
+            }
         }
             
         if (error != '') 

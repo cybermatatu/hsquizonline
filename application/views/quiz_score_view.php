@@ -7,13 +7,11 @@
     {
         
 ?>   
-    <h3 class="notice" style="margin: 0 auto; width: 400px; text-align: center;">Số câu trả lời đúng: <?php echo $score['correct']; ?></h3><br />
-    <h3>Lời Nhắn: </h3>
-    <p>
-    Cảm ơn bạn đã thực hiện bài Quiz.
-    </p>
-    <hr />
-    
+    <h3 class="notice" style="margin: 0 auto; width: 400px; text-align: center;">
+        Số câu trả lời đúng: <?php echo $score['correct']; ?><br />
+        Số điểm của bạn là: <span class="green"><?php echo $score['score']; ?></span> / 10
+    </h3>
+
     </div>
 <?php          
     }                

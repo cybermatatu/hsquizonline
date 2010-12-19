@@ -13,16 +13,16 @@ class Quiz_Model extends MY_Model {
 ------------------------------------------------------------------------------------------*/
     public function add_quiz($data)
     {
+        //echo "<script>alert(1);</script>";
                 
         $data['quiz_title'] = $this->db->escape_str($data['quiz_title']);
         $data['quiz_info']  = $this->db->escape_str($data['quiz_info']);
-        $data['quiz_tag']   = $this->db->escape_str($data['quiz_tag']);
+    
         $user_id            = $_SESSION['user_id'];
         
         $quiz = array( 'category_id' => $data['category_id'],
                        'quiz_title' => $data['quiz_title'],
                        'quiz_info' => $data['quiz_info'],
-                       'quiz_tag' => $data['quiz_tag'],
                        'user_id' => $user_id,
                        'created_on' => date('Y-m-d H:i:s'),
                        'question_total' => $data['total'] );  
@@ -31,19 +31,25 @@ class Quiz_Model extends MY_Model {
         $this->db->insert('quiz', $quiz);    
         $quiz_id = $this->db->insert_id();   
         
-        $quiz_st = array('quiz_id' => $quiz_id,
-                        'st_status' => @$data['st_status'],
-                        'st_password' => @$data['st_pass'],  
-                        'st_comment' => @$data['st_cm'],  
-                        'st_time' => @$data['st_time'],  
-                        'st_email' => @$data['st_email'],  
-                        'st_question' => @$data['st_question'],  
-                        'st_answer' => @$data['st_answer'],  
-                        'st_require' => @$data['st_require'],  
-                        'st_show_answer' => @$data['st_show_answer'],
-                        'st_show_score' => @$data['st_show_score'],
-                        'st_msg' => @$data['st_msg']);    
+        $quiz_st = array('quiz_id'          => $quiz_id,
+                        'st_status'         => $data['st_status'],
+                        'st_password'       => $data['st_pass'],  
+                        'st_time'           => $data['st_time'],
+                        'st_limit'          => $data['st_limit'],
+                        'st_question_sort'  => $data['st_question_sort'],
+                        'st_question_show'  => $data['st_question_show'],
+                        'st_score_show'     => $data['st_score_show']);
+                        
+        // nếu có ngày giời bắt đầu, kết thúc thì mới insert vào                   
+        if ($data['st_status'] == '2')
+        {
+            $date = array('st_date_start' => date('Y-m-d H:i:s',strtotime(@$data['st_day_start'] . @$data['st_time_start'])),
+                          'st_date_end' => date('Y-m-d H:i:s',strtotime(@$data['st_day_end'] . @$data['st_time_end'])),);
+            
+            $quiz_st = array_merge($quiz_st, $date);
+        }
         
+        //var_dump($quiz_st);  exit();
         // INSERT QUIZ SETTING
         $this->db->insert('quiz_setting', $quiz_st);
         
@@ -65,8 +71,9 @@ class Quiz_Model extends MY_Model {
                                  'a_text' => $a,
                                  'a_order' => $a_num );
                                  
-                if (in_array($a_num+1, $data['answer_'.$order.'_check']))
-                    $answer = array_merge($answer, array('a_correct' => 1));  
+                if ($data['question_type'][$q_num] != 4)
+                    if (in_array($a_num+1, $data['answer_'.$order.'_check']))
+                        @$answer = array_merge($answer, array('a_correct' => 1));  
                 
                 // INSERT ANSWER   
                 $this->db->insert('answer', $answer);               
@@ -78,7 +85,7 @@ class Quiz_Model extends MY_Model {
 /*------------------------------------------------------------------------------------------
 // GET QUIZ BY QUIZ_ID
 ------------------------------------------------------------------------------------------*/
-    function get_quiz($quiz_id = 0)
+    public function get_quiz($quiz_id = 0)
     {
         $quiz['info'] = $this->db->select('*,users.username')->where('quiz_id', $quiz_id);
         $quiz['info'] = $this->db->join('users', 'users.user_id = quiz.user_id')->get('quiz')->row();
@@ -90,7 +97,7 @@ class Quiz_Model extends MY_Model {
        
         foreach ($question as $q_key => $q) {
             $quiz['question'][$q_key] = $q;
-            $answer = $this->db->select('a_text, a_order')->where('question_id', $q->question_id)->get('answer')->result();
+            $answer = $this->db->select('answer_id, a_text, a_order')->where('question_id', $q->question_id)->get('answer')->result();
             foreach ($answer as $a_key => $a ) {
                 $quiz['answer'][$q_key][$a_key] = $a;
             }
@@ -102,7 +109,7 @@ class Quiz_Model extends MY_Model {
 /*------------------------------------------------------------------------------------------
 // GET QUIZ LIST BY USRE_ID
 ------------------------------------------------------------------------------------------*/
-    function get_quiz_list_by_user_id($user_id = null, $start = 0, $limit = 10)
+    public function get_quiz_list_by_user_id($user_id = null, $start = 0, $limit = 10)
     {
         $query  = "SELECT SQL_CALC_FOUND_ROWS quiz.*, category.title, users.username FROM (quiz)";
         $query .= "JOIN users ON quiz.user_id = users.user_id ";
@@ -121,7 +128,7 @@ class Quiz_Model extends MY_Model {
 /*------------------------------------------------------------------------------------------
 // GET QUIZ LIST BY CATEGORY_ID
 ------------------------------------------------------------------------------------------*/
-    function get_quiz_list_by_category_id($category_id, $start = 0, $limit = 4)
+    public function get_quiz_list_by_category_id($category_id, $start = 0, $limit = 4)
     {
         $query = $this->db->select('*, users.user_id, users.username, quiz_setting.st_password');
         $query = $this->db->where('category_id', $category_id);
@@ -140,16 +147,82 @@ class Quiz_Model extends MY_Model {
 /*------------------------------------------------------------------------------------------
 // REMOVE QUIZ BY QUIZ_ID
 ------------------------------------------------------------------------------------------*/    
-    function remove_quiz($quiz_id)
+    public function remove_quiz($quiz_id)
     {
         $this->db->delete('quiz', array('quiz_id' => $quiz_id));
     }
+    
+    
+/*------------------------------------------------------------------------------------------
+// CHECK QUIZED ALREADY
+------------------------------------------------------------------------------------------*/  
+    public function check_already($user_id, $quiz_id)
+    {
+        $query = $this->db->get_where('reports', array('user_id' => $user_id, 'quiz_id' => $quiz_id));
+        
+        if ($query->num_rows() > 0)
+            return true;
+        else
+            return false;
+    }
+/*------------------------------------------------------------------------------------------
+// Ini USER RESULT
+------------------------------------------------------------------------------------------*/    
+    public function set_result($user_id, $quiz_id)
+    {
+        $question = $this->db->select('question_id, q_type')->where('quiz_id', $quiz_id)->get('question')->result();
+        
+        foreach ($question as $q) {
+            $answer = $this->db->select('answer_id')->where('question_id', $q->question_id)->get('answer')->result();
+            
+            foreach ($answer as $a) {
+                $result = array('user_id' => $user_id,
+                                'quiz_id' => $quiz_id,
+                                'question_id' => $q->question_id,
+                                'answer_id' => $a->answer_id);
+                                
+                $this->db->insert('result', $result);
+                $result_id[] = $this->db->insert_id();
+            }
+        }
+        
+        return $result_id;
+    }
+    
+/*------------------------------------------------------------------------------------------
+// get USER RESULT ALREADY
+------------------------------------------------------------------------------------------*/    
+    public function get_result($user_id, $quiz_id)
+    {
+        $query = $this->db->select('rs_id')->from('result')->where(array('user_id' => $user_id, 'quiz_id' => $quiz_id))->get()->result();
+        
+        foreach ($query as $q) {
+            $result_id[] = $q->rs_id;    
+        }
+        
+        return $result_id;
+    }
+    
+/*------------------------------------------------------------------------------------------
+// UPDATE RESULT BY RESULT_ID
+------------------------------------------------------------------------------------------*/    
+    public function update_result($data, $ajax = true)
+    {
+        for ($i=1; $i <= $data['q_total']; $i++) {
+            
+            foreach($data['result_'.$i] as $a_key => $a) {
+                $this->db->update('result', array('rs_result' => @$data['answer_'.$i][$a_key]), array('rs_id' => $data['result_'.$i][$a_key]));
+            }
+        }
+        
+        if ($ajax) exit();
 
+    }
 
 /*------------------------------------------------------------------------------------------
 // CHECK CORRECT ANSWER
 ------------------------------------------------------------------------------------------*/  
-    function check_answer($data)
+    public function check_answer($data)
     {
         $time = time() - $_SESSION['time_start'];
         $quiz['setting'] = $this->db->get_where('quiz_setting', array('quiz_id' => $data['id']))->row();
@@ -162,44 +235,53 @@ class Quiz_Model extends MY_Model {
             }
             
         $score['correct'] = 0;
-        $question = $this->db->select('question_id')->where('quiz_id', $data['id'])->get('question')->result();
+        $question = $this->db->select('question_id, q_type')->where('quiz_id', $data['id'])->get('question')->result();
        
         foreach ($question as $q_key => $q) {
             $kt = true;            
-            if (@$data['answer_check_'.($q_key+1)])
+            
+            //Check Questiontype[4 = tự luận]
+            if ($q->q_type != 4)
             {
-                $answer = $this->db->select('a_order, a_correct')->where('question_id', $q->question_id)->get('answer')->result();
-                foreach ($answer as $a_key => $a ) {
-                    
-                    if ($a->a_correct == 1)
-                    {
-                        if (!in_array($a_key, $data['answer_check_'.($q_key+1)]))
+
+                if (@$data['answer_'.($q_key+1)])
+                {
+                    $answer = $this->db->select('a_order, a_correct')->where('question_id', $q->question_id)->get('answer')->result();
+                    foreach ($answer as $a_key => $a ) {
+                        
+                        if ($a->a_correct == 1)
                         {
-                            $kt = false;
-                            break;
+                            if (!in_array($a_key, $data['answer_'.($q_key+1)]))
+                            {
+                                $kt = false;
+                                break;
+                            }
                         }
-                    }
-                    else
-                    {
-                        if (in_array($a_key, $data['answer_check_'.($q_key+1)]))
+                        else
                         {
-                            $kt = false;
-                            break;
-                        }                      
+                            if (in_array($a_key, $data['answer_'.($q_key+1)]))
+                            {
+                                $kt = false;
+                                break;
+                            }                      
+                        }
+                        
                     }
-                    
-                    //echo in_array($a_key, $data['answer_check_'.($q_key+1)]).'-'.$a->a_correct.' '.$kt.'<br/>';
+                    if ($kt)
+                        $score['correct']++;             
                 }
-                if ($kt)
-                    $score['correct']++;             
             }
         }
-        // update report                
-        $this->update_report($_SESSION['report_id'], $time, $score['correct'], ($q_key+1-$score['correct']), round(($score['correct']/($q_key+1))*100));
-        unset($_SESSION['report_id']);
+        
+        $q_total = $q_key + 1;       
+        
+        $score['score'] = round(10 / $q_total * $score['correct']);
+        
+        //Update report
+        $this->update_report($_SESSION['report_id'], $time, $score['correct'], ($q_total - $score['correct']), $score['score']);                
         
         $score['correct'] = '<span style="color: #C00">' . $score['correct'] . '</span> / ' . ($q_key+1);
-        
+
     return $score;
     }
     
@@ -207,7 +289,7 @@ class Quiz_Model extends MY_Model {
 /*------------------------------------------------------------------------------------------
 // KHỞI TẠO KẾT QUẢ REPORT KHI NGƯỜI DÙNG BẮT ĐẦU LÀM QUIZ, ĐỂ TRÁNH TÌNH TRẠNG THOÁT NỮA CHỪNG
 ------------------------------------------------------------------------------------------*/
-    function set_report($quiz)
+    public function set_report($quiz)
     {
         $data = array('quiz_id'     => $quiz['info']->quiz_id,
                       'user_id'     => $_SESSION['user_id'],
@@ -227,7 +309,7 @@ class Quiz_Model extends MY_Model {
 /*------------------------------------------------------------------------------------------
 // CẬP NHẬT KẾT QUẢ BÀI QUIZ
 ------------------------------------------------------------------------------------------*/
-    function update_report($rp_id, $time, $correct, $wrong, $score)
+    public function update_report($rp_id, $time, $correct, $wrong, $score)
     {
         $data = array('time'    => $time,
                       'correct' => $correct,
@@ -238,28 +320,36 @@ class Quiz_Model extends MY_Model {
     }
 	
 /*------------------------------------------------------------------------------------------
-// CẬP NHẬT KẾT QUẢ BÀI QUIZ
+// LÁY KẾT QUẢ BÀI QUIZ
 ------------------------------------------------------------------------------------------*/
 
-    function get_report($quiz_id, $start = 0, $limit = 10)
+    public function get_report($quiz_id, $start = 0, $limit = 10)
     {
                  $this->db->select()->where('quiz_id', $quiz_id);
                  $this->db->join('users', 'reports.user_id = users.user_id');
         $query = $this->db->order_by('reports.rp_id', 'DESC')->limit($limit, $start)->get('reports')->result();
         
         foreach ($query as $k => $q) {
-            $diem[$k] = (int)round($q->score/10);
+            $diem[$k] = (int)$q->score;
         }
-        $query['diem'] = $diem;
+        $query['diem'] = @$diem;
         
         return $query;
+    }
+    
+    public function get_report_id($user_id, $quiz_id)
+    {
+        $query = $this->db->select('rp_id')->from('reports')->where(array('user_id' => $user_id, 'quiz_id' => $quiz_id));
+        $query = $this->db->order_by('rp_id', 'DESC')->limit(1)->get()->row();
+        
+        return $query->rp_id;
     }
     
 /*------------------------------------------------------------------------------------------
 // LẤY DANH SÁCH MÔN HỌC
 ------------------------------------------------------------------------------------------*/
 
-    function get_list_category($user_id = null)
+    public function get_list_category($user_id = null)
     {
         $query  = "SELECT category_id, code, title FROM (category)";
         if ($user_id)

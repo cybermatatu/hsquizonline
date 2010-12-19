@@ -4,10 +4,10 @@
         <label>Tình trạng:</label>
         Mở<input class="st_status" type="radio" name="st_status" value="1" checked="checked" /> 
         Khóa<input class="st_status" type="radio" name="st_status" value="0" />
-        Thời hạn<input type="radio" id="st_status" name="st_status" />
+        Thời hạn<input type="radio" id="st_status" name="st_status" value="2" />
         <div id="st_status_box" class="hide">
-            <div>Bắt đầu &nbsp;<input type="text" id="st_day_start" name="st_day_start" /> <input type="text" id="st_time_start" name="st_time_start" /></div>
-            <div><label>&nbsp;</label>Kết thúc <input type="text" id="st_day_end" name="st_day_end" /> <input type="text" id="st_time_end" name="st_time_end" /></div>
+            <div>Bắt đầu &nbsp;<input type="text" id="st_day_start" name="st_day_start" /> <input type="text" id="st_time_start" name="st_time_start" value="00:00" /></div>
+            <div><label>&nbsp;</label>Kết thúc <input type="text" id="st_day_end" name="st_day_end" /> <input type="text" id="st_time_end" name="st_time_end" value="00:00" /></div>
         </div>
     </li>
     <li>
@@ -24,7 +24,7 @@
     </li>
     <li>
         <label>Số lần thực hiện:</label>
-        Một lần<input type="radio" name="st_loop" value="0" checked="checked" /> 
-        Không giới hạn<input type="radio" name="st_loop" value="1" /> 
+        Một lần<input type="radio" name="st_limit" value="0" checked="checked" /> 
+        Không giới hạn<input type="radio" name="st_limit" value="1" /> 
     </li>
 </ul>

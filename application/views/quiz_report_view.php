@@ -68,7 +68,7 @@
                             <span class="span-6"><a href="#">'.$l->username.'</a></span>
                             <span class="span-4">'.date('i \m\i\n\s s \s\e\c\s',$l->time).'</span>
                             <span class="span-4"><b>'.$l->correct.' / '.($l->correct + $l->wrong).'</b></span>
-                            <span class="span-4">'.$l->score.'%</span>
+                            <span class="span-4">'.$l->score.' / 10</span>
                           </li>'; 
                 }
             }

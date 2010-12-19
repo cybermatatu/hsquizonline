@@ -9,5 +9,11 @@
         <label>Sắp xếp:</label>
         Mặc định<input type="radio" name="st_question_sort" value="0" checked="checked" /> 
         Ngẫu nhiên<input type="radio" name="st_question_sort" value="1" /> 
-    </li>   
+    </li>  
+    <li><label><strong>Trả lời</strong></label></li>
+    <li>
+        <label>Hiển Thị kết quả:</label>
+        Không<input type="radio" name="st_score_show" value="0" checked="checked" /> 
+        Có<input type="radio" name="st_score_show" value="1" /> 
+    </li> 
 </ul>
