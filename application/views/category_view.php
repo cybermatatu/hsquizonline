@@ -7,7 +7,9 @@
             <label class="span-8">Tên Môn Học</label>
             <label class="span-4">Người Tạo</label>
             <label class="span-3">Ngày Tạo</label>
+            <?php if ($_SESSION['user_type'] != 3) { ?>
             <label><a href="<?php echo site_url(); ?>/category/create_category" class="button add">Tạo môn học mới</a></label>
+            <?php } ?>
         </li>
         <?php 
         if ($list)
@@ -25,7 +27,6 @@
                             <a href="'.site_url().'/quiz/report/'.$l->category_id.'" title="Chỉnh sửa"><img src="'.base_url().'/images/icons/edit.png" /></a>&nbsp;&nbsp;&nbsp;
                             <a href="'.site_url().'/quiz/report/'.$l->category_id.'" title="Xóa"><img src="'.base_url().'/images/icons/comment_delete.gif" /></a>
                         </span>
-                        <span class="right"><input type="checkbox" checked="checked" /></span>
                       </li>'; 
             }
         }

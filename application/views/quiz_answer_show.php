@@ -48,6 +48,9 @@ foreach ($quiz['question'] as $q_key => $q) {
 <script type="text/javascript" src="<?PHP echo base_url()?>js/MY_answer.js"></script>
 <?php if ($quiz['setting']->st_time != 0) { ?>
 <div id="time_box">
-<span class="container">Thời gian còn lại: <span id="counter"><?php echo date('YmdHis', time()+($quiz['setting']->st_time*60)) ?></span></span>
+<div>
+    <img src="<?php echo base_url();?>/images/icons/clock1.png" />
+</div>
+<span id="counter"><?php echo date('YmdHis', time()+($quiz['setting']->st_time*60)) ?></span>
 </div>
 <?php } ?>

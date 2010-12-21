@@ -11,7 +11,7 @@
 |	http://example.com/
 |
 */
-$config['base_url']	= "http://quiz.online/";
+$config['base_url']	= "http://localhost/tracnghiem/";
 
 /*
 |--------------------------------------------------------------------------

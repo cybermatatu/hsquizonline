@@ -87,7 +87,7 @@ class Quiz_Model extends MY_Model {
 ------------------------------------------------------------------------------------------*/
     public function get_quiz($quiz_id = 0)
     {
-        $quiz['info'] = $this->db->select('*,users.username')->where('quiz_id', $quiz_id);
+        $quiz['info'] = $this->db->select('quiz.*,users.username')->where('quiz_id', $quiz_id);
         $quiz['info'] = $this->db->join('users', 'users.user_id = quiz.user_id')->get('quiz')->row();
         
         if (!$quiz['info']) redirect();
@@ -97,7 +97,7 @@ class Quiz_Model extends MY_Model {
        
         foreach ($question as $q_key => $q) {
             $quiz['question'][$q_key] = $q;
-            $answer = $this->db->select('answer_id, a_text, a_order')->where('question_id', $q->question_id)->get('answer')->result();
+            $answer = $this->db->select('answer_id, a_text, a_order, a_correct')->where('question_id', $q->question_id)->get('answer')->result();
             foreach ($answer as $a_key => $a ) {
                 $quiz['answer'][$q_key][$a_key] = $a;
             }
@@ -277,8 +277,17 @@ class Quiz_Model extends MY_Model {
         
         $score['score'] = round(10 / $q_total * $score['correct']);
         
-        //Update report
-        $this->update_report($_SESSION['report_id'], $time, $score['correct'], ($q_total - $score['correct']), $score['score']);                
+        if ($quiz['setting']->st_score_show == 1)
+        {
+            //Update report
+            $this->update_report($_SESSION['report_id'], $time, $score['correct'], ($q_total - $score['correct']), $score['score']);
+        }
+        else
+        {
+            //Update report
+            $this->update_report($_SESSION['report_id'], $time, $score['correct'], ($q_total - $score['correct']), $score['score'], 0);
+        }
+                        
         
         $score['correct'] = '<span style="color: #C00">' . $score['correct'] . '</span> / ' . ($q_key+1);
 
@@ -309,12 +318,13 @@ class Quiz_Model extends MY_Model {
 /*------------------------------------------------------------------------------------------
 // CẬP NHẬT KẾT QUẢ BÀI QUIZ
 ------------------------------------------------------------------------------------------*/
-    public function update_report($rp_id, $time, $correct, $wrong, $score)
+    public function update_report($rp_id, $time, $correct, $wrong, $score, $status = 1)
     {
-        $data = array('time'    => $time,
-                      'correct' => $correct,
-                      'wrong'   => $wrong,
-                      'score'   => $score);
+        $data = array('time'      => $time,
+                      'correct'   => $correct,
+                      'wrong'     => $wrong,
+                      'score'     => $score,
+                      'rp_status' => $status);
                       
         $this->db->update('reports', $data, array('rp_id' => $rp_id));
     }
@@ -358,6 +368,23 @@ class Quiz_Model extends MY_Model {
         $result = $this->db->query($query)->result();
                    
         return $result;
+    }
+    
+/*------------------------------------------------------------------------------------------
+// SEARCH
+------------------------------------------------------------------------------------------*/
+
+    public function search($data)
+    {
+        $query = $this->db->select('quiz.*, users.username')->from('quiz');
+        if ($data['type'] == 'title')
+            $query = $this->db->like('quiz_'.$data['type'], $data['text']);
+        else
+            $query = $this->db->where('quiz_'.$data['type'], $data['text']);
+        $query = $this->db->join('users', 'quiz.user_id = users.user_id')->get();
+        
+        echo json_encode(array('data' => $query->result()));
+        exit();
     }
 
 }

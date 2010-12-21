@@ -13,7 +13,7 @@ var done = false;
 $(document).ready(function(){
     
     $tm = $('#tm').val();
-    $('#time_box').slideDown('slow');
+    $('#time_box').fadeIn('slow');
     $('#counter').tgcCountdown({
        counter: '[M]:[S]',
        counter_warning: '[M]:[S]',
@@ -33,7 +33,7 @@ function call_back()
     $("#answer_form").submit();
 }
 
-var send = setInterval("send_answer()", 10000);
+var send = setInterval("send_answer()", 60000);
 
 function send_answer()
 {

@@ -29,14 +29,9 @@
 </head>
 
 <body>
-<div id="top_toggle">
-    Something...
-</div>
-<div id="top_face"><div class="container">
-    <div id="logo">&nbsp;</div>    
-</div></div>
 <div class="header">
     <div class="container">
+        <a href="<?php echo site_url();?>"><div id="logo">&nbsp;</div></a> 
         <ul class="menu">
             <li><a href="#"><img src="<?php echo base_url(); ?>images/icons/home.png" /><br />Home</a></li>
             <li><a href="#"><img src="<?php echo base_url(); ?>images/icons/email.png" /><br />Contact</a></li>

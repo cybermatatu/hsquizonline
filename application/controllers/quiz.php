@@ -14,16 +14,13 @@ class Quiz extends MY_Controller {
         
         if (isset($_SESSION['user_type']))
         {
-            // nếu là student
-            if ($_SESSION['user_id'] == 3)
-                redirect();
-                
+                         
             // nếu là teacher
             if ($_SESSION['user_id'] == 2)
                 $this->master->list = $this->Quiz_Model->get_quiz_list_by_user_id($_SESSION['user_id'], $start);
                 
             // nếu là Administrator
-            if ($_SESSION['user_id'] == 1)
+            if ($_SESSION['user_id'] != 2)
                 $this->master->list = $this->Quiz_Model->get_quiz_list_by_user_id(null, $start);
                 
             // config phân trang    
@@ -201,7 +198,9 @@ class Quiz extends MY_Controller {
     
     public function delete()
     {
-
+        if ($_SESSION['user_type'] == 3)
+            redirect();
+        
         $quiz_id = $this->uri->segment(3);
         $this->Quiz_Model->remove_quiz($quiz_id);
         redirect($_SERVER['HTTP_REFERER']);
@@ -228,11 +227,20 @@ class Quiz extends MY_Controller {
     
     public function edit()
     {
+        if ($_SESSION['user_type'] == 3)
+            redirect();
+            
         $quiz_id = $this->uri->segment(3);
         
         $this->master->quiz = $this->Quiz_Model->get_quiz($quiz_id);
         
-        
+        if ($_SESSION['user_type'] == 1)
+                $this->master->category_list = $this->Quiz_Model->get_list_category();
+            else
+                $this->master->category_list = $this->Quiz_Model->get_list_category($_SESSION['user_type']);      
+          
+        $this->master->content = $this->load->view('quiz_edit_view', $this->master, TRUE);
+        $this->load->view('layout', $this->master);
     }
     
     

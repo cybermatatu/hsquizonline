@@ -2,7 +2,7 @@
 
 class Users_Model extends MY_Model {
     
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();	
 	}
@@ -31,7 +31,7 @@ class Users_Model extends MY_Model {
         exit;
     }
     
-    function add_user($data)
+    public function add_user($data)
     {
         $user = array('username' => $this->db->escape_str($data['user_name']),
                       'password' => md5($data['user_password']),
@@ -42,7 +42,7 @@ class Users_Model extends MY_Model {
         $this->db->insert('users', $user);
     }
 	
-    function check_username($data)
+    public function check_username($data)
     {
         $query = $this->db->get_where('users', array('username' => $data['username']));
         
@@ -58,7 +58,7 @@ class Users_Model extends MY_Model {
         } 
     }
     
-    function getListUser($user_type = null)
+    public function getListUser($user_type = null)
     {
         $query = $this->db->select()->from('users');
         
@@ -78,4 +78,10 @@ class Users_Model extends MY_Model {
         
         return $query->result();
     }
+    
+    public function deleteUser($userid)
+    {
+        $this->db->delete('users', array('user_id' => $userid));
+    }
+    
 }

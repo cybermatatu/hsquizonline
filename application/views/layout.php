@@ -37,22 +37,22 @@ else
 </head>
 
 <body>
-<div id="top_toggle">
-    Something...
-</div>
-<div id="top_face"><div class="container">
-    <div id="logo">&nbsp;</div>    
-</div></div>
 <div class="header">
     <div class="container">
+        <a href="<?php echo site_url();?>"><div id="logo">&nbsp;</div></a>
         <ul class="menu">
             <li><a href="<?php echo site_url(); ?>"><img src="<?php echo base_url(); ?>images/icons/home.png" /><br />Trang Chủ</a></li>
             <li><a href="<?php echo site_url(); ?>/quiz"><img src="<?php echo base_url(); ?>images/icons/test.png" /><br />Đề Thi</a></li>
             <li><a href="<?php echo site_url(); ?>/category"><img src="<?php echo base_url(); ?>images/icons/subject.png" /><br />Môn Học</a></li>
-            <li><a href="#"><img src="<?php echo base_url(); ?>images/icons/report.png" /><br />Báo Cáo</a></li>
+            <li><a href="<?php echo site_url(); ?>/report"><img src="<?php echo base_url(); ?>images/icons/report.png" /><br />Báo Cáo</a></li>
+            <?php if ($_SESSION['user_type'] != 3) { ?>
             <li><a href="<?php echo site_url(); ?>/users"><img src="<?php echo base_url(); ?>images/icons/student.png" /><br />Người Dùng</a></li>
-            <li><a href="<?php echo site_url(); ?>/help"><img src="<?php echo base_url(); ?>images/icons/help.png" /><br />Giúp Đỡ</a></li>
-            
+            <?php } ?>
+            <li class="box_welcome radius">
+                <span class="icon-user-group" style="color: #C00;"><?php echo $_SESSION['user_name']; ?></span>
+                <span class="icon-user-edit"><a href="<?php echo site_url();?>/users/logout">Thay đổi thông tin</a></span>
+                <span class="icon-user-logout"><a href="<?php echo site_url();?>/users/logout">Thoát</a></span>
+            </li>
         </ul>
     </div>
 </div>

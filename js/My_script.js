@@ -2,15 +2,12 @@ $(document).ready(function(){
     
 /*============================ KHOI TAO CAC FUNC CAN BAN
 ============================================================================= */
-
-    $("#logo").click(function () {
-        $("#top_toggle").slideToggle("fast");
-    });
     
     $("#setting").tabs();
     //buttons
     $(".button-add").button({ icons: { primary: "ui-icon-circle-plus" } });
     $(".button-accept").button({ icons: { primary: "ui-icon-circle-check" } });
+    
 /*============================ SUMIT USER REGISTER
 ============================================================================= */
     $("#show_signup_form").click(function () {
@@ -214,6 +211,63 @@ var q_num = 1 , q_order = 1; //question number và answer number = 1
     })
 
 //============================ END USERS =====================================
+
+
+/**
+* Search Script
+**/
+    $("#search-form").submit(function(){
+        //Get text
+        var text = $("#search-text").val();
+        
+        //Check text length
+        if (text.length < 1)
+        {
+            $("#search-result").hide().html("<span class='red'>Vui lòng nhập nội dung cần tìm kiếm.</span>").slideDown('slow');
+            return false;    
+        }
+            
+            
+        //Call ajax search 
+        $.ajax({
+                type: "POST",
+                url: site_url,
+                data: "model=quiz&action=search&"+$("#search-form").serialize(),
+                dataType: 'json',
+                success: function(msg){
+                    
+                    if (msg['data'].length > 0)
+                    {
+                        var html = '<ul class="home-list"><li class="home-list-first">'
+                                 + '<span class="span-9">Tên đề thi</span><span class="span-4">Người tạo</span>'
+                                 + '<span class="span-5">Ngày tạo</span><span class="span-4">Số câu hỏi</span></li>';
+                                 
+                        for (i in msg['data'])
+                        {
+                            html += '<li><span class="span-9"><a href="'+ site_url +'/quiz/view/'
+                                 +  msg['data'][i]['quiz_id'] + '">'+ msg['data'][i]['quiz_title'] +'</a></span>'
+                                 +  '<span class="span-4">'+ msg['data'][i]['username'] +'</span>'
+                                 +  '<span class="span-5">'+ msg['data'][i]['created_on'] +'</span>'
+                                 +  '<span class="span-4">'+ msg['data'][i]['question_total'] +' câu</span></li>';
+                        }
+                        
+                        html += '</ul>';
+                    }
+                    else
+                    {
+                        html = 'Không tìm thấy kết quả nào với từ khóa <em><b>"'+ text +'"<b></em>';
+                    }
+                    
+                    $("#search-result").hide().html(html).slideDown('slow');
+                    
+                return false;                           
+                },
+                error: function(msg){
+                    alert(msg);
+                }
+        });
+    return false;    
+    });
 
 });
 
