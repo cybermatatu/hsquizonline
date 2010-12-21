@@ -11,12 +11,21 @@
                 <label>&nbsp;Loại: &nbsp;</label>
                 <select name="user_type">
                 <?php
-                    foreach ($listUserType as $t) {
-                        echo '<option value="'.$t->user_type.'">'.$t->user_title.'</option>';
+                    if ($_SESSION['user_type'] == 2)
+                    {
+                        echo '<option value="3">Student</option>';
                     }
+                    else
+                    {
+                        foreach ($listUserType as $t) {
+                            echo '<option value="'.$t->user_type.'">'.$t->user_title.'</option>';
+                        }
+                    }
+                    
                 ?>
-                </select>
-                <input type="submit" name="created" class="button" value="Tạo mới" />
+                </select> 
+                &nbsp;&nbsp;
+                <input type="submit" name="created" class="button add" value="Tạo mới" />
             <div id="error_signup" class="red"></div>
         </fieldset>
         </form>
@@ -28,6 +37,7 @@
             <label class="span-4">Username</label>
             <label class="span-6">Email</label>
             <label class="span-4">
+            <?php if ($_SESSION['user_type'] == 1) { ?>
             <select name="user_type" onchange="$(this).parents('form').submit()">
                 <option value="0" onclick="$(this).parents('form').submit()">Tất cả</option>
                 <?php
@@ -36,9 +46,10 @@
                     }
                 ?>
             </select>
+            <?php } ?>
             </label>
             <label class="span-4">Created On</label>
-            <label><a id="show_signup_form" class="button add">Thêm tài khoản mới</a></label>
+            <label class="right"><a id="show_signup_form" class="button add">Thêm tài khoản mới</a></label>
         </li>
         <?php
         foreach ($listUser as $l) {
@@ -48,7 +59,7 @@
                     <label class="span-6">'.$l->email.'</label>
                     <label class="span-4">'.$l->user_title.'</label>
                     <label class="span-4">'.$l->created_on.'</label>
-                    <label><a href="#">Edit</a> | <a href="#">Delelte</a></label>
+                    <label><a href="#">Edit</a> | <a onclick="return confirm(\'Bạn có muốn xóa user này không?\');" href="'.site_url().'/users/delete/'.$l->user_id.'">Delelte</a></label>
                 </li>';
         }
         ?>

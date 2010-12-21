@@ -2,16 +2,21 @@
 
 class Users extends MY_Controller {
 
-	function __construct()
+	public function __construct()
 	{
         parent::__construct();	 
         $this->load->model('Users_Model');       	
 	}
 	
-	function index()
+	public function index()
 	{
+        if ($_SESSION['user_type'] == 3)
+            redirect();
+            
 	    if (isset($_POST['user_type']))
             $this->master->listUser = $this->Users_Model->getListUser($_POST['user_type']);
+        elseif ($_SESSION['user_type'] == 2)
+            $this->master->listUser = $this->Users_Model->getListUser(3);
         else
             $this->master->listUser = $this->Users_Model->getListUser();
             
@@ -21,24 +26,24 @@ class Users extends MY_Controller {
 		$this->load->view('layout', $this->master);
 	}
 	 
-    function login()
+    public function login()
     {
         echo "The login page";
     }
  
-    function profile()
+    public function profile()
     {
         echo "The restricted profile page<br />";
         echo "Your user id: " . $_SESSION['user_id'];
     }
  
-    function logout()
+    public function logout()
     {
         session_destroy();
         redirect(site_url());
     }
     
-    function register()
+    public function register()
     {
         if (isset($_POST))
         {
@@ -47,5 +52,18 @@ class Users extends MY_Controller {
         }
         else
             redirect(site_url()."/users");
+    }
+    
+    public function delete()
+    {
+        if ($_SESSION['user_type'] == 3)
+            redirect(site_url());
+        else
+        {
+            $userid = $this->uri->segment(3);
+            
+            $this->Users_Model->deleteUser($userid);
+            redirect(site_url()."/users");
+        }    
     }
 }
